@@ -69,8 +69,8 @@ public static class DbInitializer
                     Duracion = 175,
                     Idioma = "Español",
                     Subtitulada = true,
-                    IdGenero = context.Generos.First().IdGenero, // Referencia a un IdGenero existente
-                    IdSala = context.Salas.First().IdSala // Referencia a un IdSala existente
+                    IdGenero = context.Generos.First().IdGenero,
+                    IdSala = context.Salas.First().IdSala
                 },
                 new Pelicula
                 {
@@ -78,8 +78,8 @@ public static class DbInitializer
                     Duracion = 195,
                     Idioma = "Inglés",
                     Subtitulada = true,
-                    IdGenero = context.Generos.Skip(1).First().IdGenero, // Segundo género
-                    IdSala = context.Salas.Skip(1).First().IdSala // Segunda sala
+                    IdGenero = context.Generos.Skip(1).First().IdGenero,
+                    IdSala = context.Salas.Skip(1).First().IdSala
                 }
             };
             context.Peliculas.AddRange(peliculas);
@@ -96,10 +96,10 @@ public static class DbInitializer
         {
             Console.WriteLine("Poblando la tabla Horario...");
             var horarios = new List<Horario>
-    {
-        new Horario { Fecha = new DateTime(2024, 12, 9), Hora = new TimeOnly(18, 30) },
-        new Horario { Fecha = new DateTime(2024, 12, 10), Hora = new TimeOnly(20, 0) }
-    };
+            {
+                new Horario { Fecha = new DateTime(2024, 12, 9), Hora = new TimeOnly(18, 30) },
+                new Horario { Fecha = new DateTime(2024, 12, 10), Hora = new TimeOnly(20, 0) }
+            };
             context.Horarios.AddRange(horarios);
             context.SaveChanges();
             Console.WriteLine("Tabla Horario poblada.");
@@ -117,8 +117,23 @@ public static class DbInitializer
             {
                 new PeliculaHorario
                 {
-                    IdPelicula = context.Peliculas.First().IdPelicula,
-                    IdHorario = context.Horarios.First().IdHorario
+                    IdPelicula = context.Peliculas.First().IdPelicula, // Primera película
+                    IdHorario = context.Horarios.First().IdHorario     // Primer horario
+                },
+                new PeliculaHorario
+                {
+                    IdPelicula = context.Peliculas.First().IdPelicula, // Primera película
+                    IdHorario = context.Horarios.Skip(1).First().IdHorario // Segundo horario
+                },
+                new PeliculaHorario
+                {
+                    IdPelicula = context.Peliculas.Skip(1).First().IdPelicula, // Segunda película
+                    IdHorario = context.Horarios.First().IdHorario             // Primer horario
+                },
+                new PeliculaHorario
+                {
+                    IdPelicula = context.Peliculas.Skip(1).First().IdPelicula, // Segunda película
+                    IdHorario = context.Horarios.Skip(1).First().IdHorario     // Segundo horario
                 }
             };
             context.PeliculaHorarios.AddRange(peliculaHorarios);
@@ -159,6 +174,11 @@ public static class DbInitializer
                 {
                     IdPelicula = context.Peliculas.First().IdPelicula,
                     IdGenero = context.Generos.First().IdGenero
+                },
+                new PeliculaGenero
+                {
+                    IdPelicula = context.Peliculas.Skip(1).First().IdPelicula,
+                    IdGenero = context.Generos.Skip(1).First().IdGenero
                 }
             };
             context.PeliculaGeneros.AddRange(peliculaGeneros);

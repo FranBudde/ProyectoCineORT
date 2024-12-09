@@ -6,7 +6,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Configurar servicios: Aquí agregas el DbContext con la cadena de conexión
 builder.Services.AddDbContext<CineContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+           .EnableSensitiveDataLogging());
+
 
 // Configurar enrutamiento para URLs en minúsculas
 builder.Services.AddRouting(options =>

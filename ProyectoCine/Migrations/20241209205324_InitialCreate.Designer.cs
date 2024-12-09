@@ -12,7 +12,7 @@ using ProyectoCine.Models;
 namespace ProyectoCine.Migrations
 {
     [DbContext(typeof(CineContext))]
-    [Migration("20241209201426_InitialCreate")]
+    [Migration("20241209205324_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />

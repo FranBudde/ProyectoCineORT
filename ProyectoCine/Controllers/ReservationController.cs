@@ -1,10 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ProyectoCine.Models;
-using System.Linq;
-using System.Net.Mail;
-using System.Net;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Http;
 
 namespace ProyectoCine.Controllers
 {
@@ -12,11 +9,9 @@ namespace ProyectoCine.Controllers
     public class ReservationController : Controller
     {
         private readonly CineContext _context;
-        private readonly IConfiguration _configuration;
 
-        public ReservationController(IConfiguration configuration, CineContext context)
+        public ReservationController(CineContext context)
         {
-            _configuration = configuration;
             _context = context;
         }
 
@@ -24,7 +19,6 @@ namespace ProyectoCine.Controllers
         [HttpGet("")]
         public IActionResult Index()
         {
-            // Verificar que el usuario esté logueado
             if (!HttpContext.Session.GetInt32("UserId").HasValue)
             {
                 return RedirectToAction("Login", "Account");
@@ -42,30 +36,36 @@ namespace ProyectoCine.Controllers
         {
             if (!HttpContext.Session.GetInt32("UserId").HasValue)
             {
-                return RedirectToAction("IniciarSesion", "Cuenta");
+                return RedirectToAction("Login", "Account");
             }
 
-            // Cargar película seleccionada
-            var movie = _context.Peliculas.FirstOrDefault(m => m.IdPelicula == selectedMovieId);
+            // Verificar existencia de la película seleccionada
+            var movie = _context.Peliculas.Include(p => p.Sala)
+                .FirstOrDefault(p => p.IdPelicula == selectedMovieId);
 
-            // Cargar PeliculaHorario con la relación Horario
+            if (movie == null)
+            {
+                return NotFound("Película no encontrada.");
+            }
+
+            // Verificar el horario seleccionado
             var schedule = _context.PeliculaHorarios
                 .Include(ph => ph.Horario)
                 .FirstOrDefault(ph => ph.IdPeliculaHorario == selectedScheduleId);
 
-            if (movie == null || schedule == null)
+            if (schedule == null)
             {
-                return NotFound("La película o el horario seleccionados no existen.");
+                return NotFound("Horario no encontrado.");
             }
 
-            // Obtener las butacas reservadas para el horario seleccionado
+            // Obtener las butacas reservadas
             var reservedSeats = _context.Reservas
                 .Where(r => r.IdPeliculaHorario == selectedScheduleId)
                 .Select(r => r.IdButaca)
                 .ToList();
 
             // Filtrar butacas disponibles
-            var seats = _context.Butacas
+            var availableSeats = _context.Butacas
                 .Where(b => !reservedSeats.Contains(b.IdButaca) && b.IdSala == movie.IdSala)
                 .OrderBy(b => b.Letra)
                 .ThenBy(b => b.numeroButaca)
@@ -74,13 +74,10 @@ namespace ProyectoCine.Controllers
             // Pasar datos a la vista
             ViewBag.Movie = movie;
             ViewBag.Schedule = schedule;
-            ViewBag.Seats = seats;
+            ViewBag.Seats = availableSeats;
 
             return View("Seats");
         }
-
-
-
 
         // POST: /reservacion/finalizar-compra
         [HttpPost("finalizar-compra")]
@@ -88,21 +85,21 @@ namespace ProyectoCine.Controllers
         {
             if (!HttpContext.Session.GetInt32("UserId").HasValue)
             {
-                return RedirectToAction("IniciarSesion", "Cuenta");
+                return RedirectToAction("Login", "Account");
             }
 
             var userId = HttpContext.Session.GetInt32("UserId").Value;
 
-            // Verificar si la butaca ya está reservada para el mismo horario
+            // Verificar si la butaca ya está reservada
             var existingReservation = _context.Reservas
                 .Any(r => r.IdPeliculaHorario == selectedScheduleId && r.IdButaca == selectedSeatId);
 
             if (existingReservation)
             {
-                return BadRequest("La butaca seleccionada ya está reservada para este horario.");
+                return BadRequest("La butaca seleccionada ya está reservada.");
             }
 
-            // Crear una nueva reserva
+            // Crear nueva reserva
             var newReservation = new Reserva
             {
                 IdUsuario = userId,
@@ -113,19 +110,17 @@ namespace ProyectoCine.Controllers
             _context.Reservas.Add(newReservation);
             _context.SaveChanges();
 
-            var seat = _context.Butacas.FirstOrDefault(b => b.IdButaca == selectedSeatId);
-            var movie = _context.Peliculas.FirstOrDefault(p => p.IdPelicula == seat.Sala.IdSala);
+            // Obtener detalles para mostrar en la vista
+            var seat = _context.Butacas.Include(b => b.Sala).FirstOrDefault(b => b.IdButaca == selectedSeatId);
+            var movie = _context.Peliculas.FirstOrDefault(p => p.IdSala == seat.IdSala);
 
-            ViewBag.MovieName = movie.NamePelicula;
-            ViewBag.SeatRow = seat.Letra;
-            ViewBag.SeatNumber = seat.numeroButaca;
-            ViewBag.SalaId = seat.Sala.IdSala;
+            ViewBag.MovieName = movie?.NamePelicula;
+            ViewBag.SeatRow = seat?.Letra;
+            ViewBag.SeatNumber = seat?.numeroButaca;
+            ViewBag.SalaId = seat?.IdSala;
             ViewBag.PaymentMethod = paymentMethod;
 
             return View("PurchaseComplete");
         }
-
-
-
     }
 }

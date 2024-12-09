@@ -9,7 +9,7 @@ namespace ProyectoCine.Models
         public int IdButaca { get; set; }
 
         [Required]
-        public bool IsAvailable { get; set; } = true; // Valor predeterminado en la aplicación
+        public bool IsAvailable { get; set; } = true;
 
         [Required]
         public int numeroButaca { get; set; }
@@ -22,11 +22,5 @@ namespace ProyectoCine.Models
 
         [ForeignKey(nameof(IdSala))]
         public Sala Sala { get; set; }
-
-        // Constructor
-        public Butaca()
-        {
-            IsAvailable = true; // Valor predeterminado en la aplicación
-        }
     }
 }
