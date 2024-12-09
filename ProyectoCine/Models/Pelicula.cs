@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace ProyectoCine.Data
+namespace ProyectoCine.Models
 {
     public class Pelicula
     {
@@ -19,9 +19,9 @@ namespace ProyectoCine.Data
         public string Idioma { get; set; }
 
         [Required]
-        public Boolean Subtitulada { get; set; }
+        public bool Subtitulada { get; set; }
 
-  
+
         [Required]
         public int IdGenero { get; set; }
 

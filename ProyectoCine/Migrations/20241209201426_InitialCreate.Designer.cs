@@ -5,14 +5,14 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using ProyectoCine.Data;
+using ProyectoCine.Models;
 
 #nullable disable
 
 namespace ProyectoCine.Migrations
 {
     [DbContext(typeof(CineContext))]
-    [Migration("20241209170503_InitialCreate")]
+    [Migration("20241209201426_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -25,7 +25,7 @@ namespace ProyectoCine.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("ProyectoCine.Data.Butaca", b =>
+            modelBuilder.Entity("ProyectoCine.Models.Butaca", b =>
                 {
                     b.Property<int>("IdButaca")
                         .ValueGeneratedOnAdd()
@@ -35,6 +35,11 @@ namespace ProyectoCine.Migrations
 
                     b.Property<int>("IdSala")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsAvailable")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
 
                     b.Property<string>("Letra")
                         .IsRequired()
@@ -50,7 +55,7 @@ namespace ProyectoCine.Migrations
                     b.ToTable("Butacas");
                 });
 
-            modelBuilder.Entity("ProyectoCine.Data.Genero", b =>
+            modelBuilder.Entity("ProyectoCine.Models.Genero", b =>
                 {
                     b.Property<int>("IdGenero")
                         .ValueGeneratedOnAdd()
@@ -67,7 +72,7 @@ namespace ProyectoCine.Migrations
                     b.ToTable("Generos");
                 });
 
-            modelBuilder.Entity("ProyectoCine.Data.Horario", b =>
+            modelBuilder.Entity("ProyectoCine.Models.Horario", b =>
                 {
                     b.Property<int>("IdHorario")
                         .ValueGeneratedOnAdd()
@@ -86,7 +91,7 @@ namespace ProyectoCine.Migrations
                     b.ToTable("Horarios");
                 });
 
-            modelBuilder.Entity("ProyectoCine.Data.Pelicula", b =>
+            modelBuilder.Entity("ProyectoCine.Models.Pelicula", b =>
                 {
                     b.Property<int>("IdPelicula")
                         .ValueGeneratedOnAdd()
@@ -123,7 +128,7 @@ namespace ProyectoCine.Migrations
                     b.ToTable("Peliculas");
                 });
 
-            modelBuilder.Entity("ProyectoCine.Data.PeliculaGenero", b =>
+            modelBuilder.Entity("ProyectoCine.Models.PeliculaGenero", b =>
                 {
                     b.Property<int>("IdPeliculaGenero")
                         .ValueGeneratedOnAdd()
@@ -146,13 +151,13 @@ namespace ProyectoCine.Migrations
                     b.ToTable("PeliculaGeneros");
                 });
 
-            modelBuilder.Entity("ProyectoCine.Data.PeliculaHorario", b =>
+            modelBuilder.Entity("ProyectoCine.Models.PeliculaHorario", b =>
                 {
-                    b.Property<int>("IdPeliculaGenero")
+                    b.Property<int>("IdPeliculaHorario")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdPeliculaGenero"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdPeliculaHorario"));
 
                     b.Property<int>("IdHorario")
                         .HasColumnType("int");
@@ -160,7 +165,7 @@ namespace ProyectoCine.Migrations
                     b.Property<int>("IdPelicula")
                         .HasColumnType("int");
 
-                    b.HasKey("IdPeliculaGenero");
+                    b.HasKey("IdPeliculaHorario");
 
                     b.HasIndex("IdHorario");
 
@@ -169,13 +174,16 @@ namespace ProyectoCine.Migrations
                     b.ToTable("PeliculaHorarios");
                 });
 
-            modelBuilder.Entity("ProyectoCine.Data.Reserva", b =>
+            modelBuilder.Entity("ProyectoCine.Models.Reserva", b =>
                 {
                     b.Property<int>("IdReserva")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdReserva"));
+
+                    b.Property<int>("IdButaca")
+                        .HasColumnType("int");
 
                     b.Property<int>("IdPeliculaHorario")
                         .HasColumnType("int");
@@ -185,6 +193,8 @@ namespace ProyectoCine.Migrations
 
                     b.HasKey("IdReserva");
 
+                    b.HasIndex("IdButaca");
+
                     b.HasIndex("IdPeliculaHorario");
 
                     b.HasIndex("IdUsuario");
@@ -192,7 +202,7 @@ namespace ProyectoCine.Migrations
                     b.ToTable("Reservas");
                 });
 
-            modelBuilder.Entity("ProyectoCine.Data.Sala", b =>
+            modelBuilder.Entity("ProyectoCine.Models.Sala", b =>
                 {
                     b.Property<int>("IdSala")
                         .ValueGeneratedOnAdd()
@@ -208,7 +218,7 @@ namespace ProyectoCine.Migrations
                     b.ToTable("Salas");
                 });
 
-            modelBuilder.Entity("ProyectoCine.Data.Usuario", b =>
+            modelBuilder.Entity("ProyectoCine.Models.Usuario", b =>
                 {
                     b.Property<int>("IdUser")
                         .ValueGeneratedOnAdd()
@@ -233,9 +243,9 @@ namespace ProyectoCine.Migrations
                     b.ToTable("Usuarios");
                 });
 
-            modelBuilder.Entity("ProyectoCine.Data.Butaca", b =>
+            modelBuilder.Entity("ProyectoCine.Models.Butaca", b =>
                 {
-                    b.HasOne("ProyectoCine.Data.Sala", "Sala")
+                    b.HasOne("ProyectoCine.Models.Sala", "Sala")
                         .WithMany()
                         .HasForeignKey("IdSala")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -244,15 +254,15 @@ namespace ProyectoCine.Migrations
                     b.Navigation("Sala");
                 });
 
-            modelBuilder.Entity("ProyectoCine.Data.Pelicula", b =>
+            modelBuilder.Entity("ProyectoCine.Models.Pelicula", b =>
                 {
-                    b.HasOne("ProyectoCine.Data.Genero", "Genero")
+                    b.HasOne("ProyectoCine.Models.Genero", "Genero")
                         .WithMany()
                         .HasForeignKey("IdGenero")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ProyectoCine.Data.Sala", "Sala")
+                    b.HasOne("ProyectoCine.Models.Sala", "Sala")
                         .WithMany()
                         .HasForeignKey("IdSala")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -263,15 +273,15 @@ namespace ProyectoCine.Migrations
                     b.Navigation("Sala");
                 });
 
-            modelBuilder.Entity("ProyectoCine.Data.PeliculaGenero", b =>
+            modelBuilder.Entity("ProyectoCine.Models.PeliculaGenero", b =>
                 {
-                    b.HasOne("ProyectoCine.Data.Genero", "Genero")
+                    b.HasOne("ProyectoCine.Models.Genero", "Genero")
                         .WithMany("PeliculaGeneros")
                         .HasForeignKey("IdGenero")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("ProyectoCine.Data.Pelicula", "Pelicula")
+                    b.HasOne("ProyectoCine.Models.Pelicula", "Pelicula")
                         .WithMany("PeliculaGeneros")
                         .HasForeignKey("IdPelicula")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -282,15 +292,15 @@ namespace ProyectoCine.Migrations
                     b.Navigation("Pelicula");
                 });
 
-            modelBuilder.Entity("ProyectoCine.Data.PeliculaHorario", b =>
+            modelBuilder.Entity("ProyectoCine.Models.PeliculaHorario", b =>
                 {
-                    b.HasOne("ProyectoCine.Data.Horario", "Horario")
+                    b.HasOne("ProyectoCine.Models.Horario", "Horario")
                         .WithMany("PeliculaHorarios")
                         .HasForeignKey("IdHorario")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ProyectoCine.Data.Pelicula", "Pelicula")
+                    b.HasOne("ProyectoCine.Models.Pelicula", "Pelicula")
                         .WithMany("PeliculaHorarios")
                         .HasForeignKey("IdPelicula")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -301,36 +311,44 @@ namespace ProyectoCine.Migrations
                     b.Navigation("Pelicula");
                 });
 
-            modelBuilder.Entity("ProyectoCine.Data.Reserva", b =>
+            modelBuilder.Entity("ProyectoCine.Models.Reserva", b =>
                 {
-                    b.HasOne("ProyectoCine.Data.PeliculaHorario", "PeliculaHorario")
+                    b.HasOne("ProyectoCine.Models.Butaca", "Butaca")
                         .WithMany()
-                        .HasForeignKey("IdPeliculaHorario")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("IdButaca")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("ProyectoCine.Data.Usuario", "Usuario")
+                    b.HasOne("ProyectoCine.Models.PeliculaHorario", "PeliculaHorario")
+                        .WithMany()
+                        .HasForeignKey("IdPeliculaHorario")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ProyectoCine.Models.Usuario", "Usuario")
                         .WithMany()
                         .HasForeignKey("IdUsuario")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Butaca");
 
                     b.Navigation("PeliculaHorario");
 
                     b.Navigation("Usuario");
                 });
 
-            modelBuilder.Entity("ProyectoCine.Data.Genero", b =>
+            modelBuilder.Entity("ProyectoCine.Models.Genero", b =>
                 {
                     b.Navigation("PeliculaGeneros");
                 });
 
-            modelBuilder.Entity("ProyectoCine.Data.Horario", b =>
+            modelBuilder.Entity("ProyectoCine.Models.Horario", b =>
                 {
                     b.Navigation("PeliculaHorarios");
                 });
 
-            modelBuilder.Entity("ProyectoCine.Data.Pelicula", b =>
+            modelBuilder.Entity("ProyectoCine.Models.Pelicula", b =>
                 {
                     b.Navigation("PeliculaGeneros");
 

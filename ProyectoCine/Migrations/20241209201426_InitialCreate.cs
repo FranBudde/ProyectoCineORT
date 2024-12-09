@@ -72,6 +72,7 @@ namespace ProyectoCine.Migrations
                 {
                     IdButaca = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    IsAvailable = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
                     numeroButaca = table.Column<int>(type: "int", nullable: false),
                     Letra = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IdSala = table.Column<int>(type: "int", nullable: false)
@@ -147,14 +148,14 @@ namespace ProyectoCine.Migrations
                 name: "PeliculaHorarios",
                 columns: table => new
                 {
-                    IdPeliculaGenero = table.Column<int>(type: "int", nullable: false)
+                    IdPeliculaHorario = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     IdPelicula = table.Column<int>(type: "int", nullable: false),
                     IdHorario = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PeliculaHorarios", x => x.IdPeliculaGenero);
+                    table.PrimaryKey("PK_PeliculaHorarios", x => x.IdPeliculaHorario);
                     table.ForeignKey(
                         name: "FK_PeliculaHorarios_Horarios_IdHorario",
                         column: x => x.IdHorario,
@@ -176,23 +177,30 @@ namespace ProyectoCine.Migrations
                     IdReserva = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     IdUsuario = table.Column<int>(type: "int", nullable: false),
-                    IdPeliculaHorario = table.Column<int>(type: "int", nullable: false)
+                    IdPeliculaHorario = table.Column<int>(type: "int", nullable: false),
+                    IdButaca = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Reservas", x => x.IdReserva);
                     table.ForeignKey(
+                        name: "FK_Reservas_Butacas_IdButaca",
+                        column: x => x.IdButaca,
+                        principalTable: "Butacas",
+                        principalColumn: "IdButaca",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
                         name: "FK_Reservas_PeliculaHorarios_IdPeliculaHorario",
                         column: x => x.IdPeliculaHorario,
                         principalTable: "PeliculaHorarios",
-                        principalColumn: "IdPeliculaGenero",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "IdPeliculaHorario",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Reservas_Usuarios_IdUsuario",
                         column: x => x.IdUsuario,
                         principalTable: "Usuarios",
                         principalColumn: "IdUser",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -231,6 +239,11 @@ namespace ProyectoCine.Migrations
                 column: "IdSala");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Reservas_IdButaca",
+                table: "Reservas",
+                column: "IdButaca");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Reservas_IdPeliculaHorario",
                 table: "Reservas",
                 column: "IdPeliculaHorario");
@@ -245,13 +258,13 @@ namespace ProyectoCine.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Butacas");
-
-            migrationBuilder.DropTable(
                 name: "PeliculaGeneros");
 
             migrationBuilder.DropTable(
                 name: "Reservas");
+
+            migrationBuilder.DropTable(
+                name: "Butacas");
 
             migrationBuilder.DropTable(
                 name: "PeliculaHorarios");

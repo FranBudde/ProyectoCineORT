@@ -1,0 +1,15 @@
+﻿<div class="container mt-5">
+    <div class="alert alert-success" role="alert">
+        <h4 class="alert-heading">Compra Confirmada</h4>
+        <p>Gracias por tu compra. Aquí tienes los detalles de tu reserva:</p>
+        <hr />
+        <ul>
+            <li><strong>Película:</strong> @ViewBag.MovieName</li>
+            <li><strong>Butaca:</strong> @ViewBag.SeatRow@ViewBag.SeatNumber</li>
+            <li><strong>Sala:</strong> @ViewBag.SalaId</li>
+            <li><strong>Método de Pago:</strong> @ViewBag.PaymentMethod</li>
+        </ul>
+        <p class="mb-0">Disfruta tu experiencia en el cine. ¡Gracias por preferirnos!</p>
+    </div>
+    <a href="/" class="btn btn-primary">Volver al Inicio</a>
+</div>

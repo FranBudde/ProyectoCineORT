@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using ProyectoCine.Models;
 using System.Diagnostics;
 
@@ -6,16 +6,26 @@ namespace ProyectoCine.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly CineContext _context;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(CineContext context)
         {
-            _logger = logger;
+            _context = context;
         }
 
+        // GET: /Home
         public IActionResult Index()
         {
-            return View();
+            var movies = _context.Peliculas
+                .Select(p => new Pelicula
+                {
+                    IdPelicula = p.IdPelicula,
+                    NamePelicula = p.NamePelicula,
+                    Duracion = p.Duracion,
+                    Genero = p.Genero
+                }).ToList();
+
+            return View(movies);
         }
 
         public IActionResult Privacy()

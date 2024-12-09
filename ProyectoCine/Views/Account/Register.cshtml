@@ -1,0 +1,20 @@
+﻿@model ProyectoCine.Models.Usuario
+
+<div class="container mt-5">
+    <h2>Registro</h2>
+    <form method="post" asp-controller="Account" asp-action="Register">
+        <div class="form-group">
+            <label for="Name">Nombre</label>
+            <input type="text" id="Name" name="Name" class="form-control" required />
+        </div>
+        <div class="form-group">
+            <label for="Email">Correo Electrónico</label>
+            <input type="email" id="Email" name="Email" class="form-control" required />
+        </div>
+        <div class="form-group">
+            <label for="Password">Contraseña</label>
+            <input type="password" id="Password" name="Password" class="form-control" required />
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Registrar</button>
+    </form>
+</div>

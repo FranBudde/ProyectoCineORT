@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ProyectoCine.Data
+namespace ProyectoCine.Models
 {
     public class Sala
     {

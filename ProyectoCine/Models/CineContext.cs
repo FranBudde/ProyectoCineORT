@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace ProyectoCine.Data
+namespace ProyectoCine.Models
 {
     public class CineContext : DbContext
     {
-        public CineContext(DbContextOptions<CineContext> options) 
+        public CineContext(DbContextOptions<CineContext> options)
             : base(options)
         {
         }
@@ -20,12 +20,35 @@ namespace ProyectoCine.Data
         public DbSet<Sala> Salas { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
 
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // Aquí configuras las relaciones
+            // Configurar valor predeterminado para IsAvailable en Butaca
+            modelBuilder.Entity<Butaca>()
+                .Property(b => b.IsAvailable)
+                .HasDefaultValue(true);
+
+            // Configuración de relaciones para Reservas
+            modelBuilder.Entity<Reserva>()
+                .HasOne(r => r.Butaca)
+                .WithMany()
+                .HasForeignKey(r => r.IdButaca)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Reserva>()
+                .HasOne(r => r.PeliculaHorario)
+                .WithMany()
+                .HasForeignKey(r => r.IdPeliculaHorario)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Reserva>()
+                .HasOne(r => r.Usuario)
+                .WithMany()
+                .HasForeignKey(r => r.IdUsuario)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Configuración de relaciones para PeliculaGeneros
             modelBuilder.Entity<PeliculaGenero>()
                 .HasOne(pg => pg.Pelicula)
                 .WithMany(p => p.PeliculaGeneros)
@@ -37,8 +60,8 @@ namespace ProyectoCine.Data
                 .WithMany(g => g.PeliculaGeneros)
                 .HasForeignKey(pg => pg.IdGenero)
                 .OnDelete(DeleteBehavior.Restrict);
-
-            // ... cualquier otra configuración
         }
+
+
     }
 }

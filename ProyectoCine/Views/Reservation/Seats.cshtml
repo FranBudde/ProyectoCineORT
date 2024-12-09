@@ -1,0 +1,18 @@
+﻿<div class="container mt-5">
+    <h2>Seleccionar Butaca</h2>
+    <p>Película: @ViewBag.Movie.NamePelicula</p>
+    <p>Horario: @ViewBag.Schedule.Horario.Fecha.ToShortDateString() - @ViewBag.Schedule.Horario.Hora</p>
+
+    <div class="seat-map">
+        @foreach (var seat in ViewBag.Seats)
+        {
+            <form method="post" asp-controller="Reservation" asp-action="FinalizarCompra">
+                <input type="hidden" name="selectedSeatId" value="@seat.IdButaca" />
+                <input type="hidden" name="selectedScheduleId" value="@ViewBag.Schedule.IdPeliculaHorario" />
+                <button class="btn btn-sm btn-success m-1">
+                    @seat.Letra@seat.numeroButaca
+                </button>
+            </form>
+        }
+    </div>
+</div>

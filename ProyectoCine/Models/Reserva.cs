@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace ProyectoCine.Data
+namespace ProyectoCine.Models
 {
     public class Reserva
     {
@@ -11,7 +11,6 @@ namespace ProyectoCine.Data
         [Required]
         public int IdUsuario { get; set; }
 
-
         [ForeignKey(nameof(IdUsuario))]
         public Usuario Usuario { get; set; }
 
@@ -20,5 +19,11 @@ namespace ProyectoCine.Data
 
         [ForeignKey(nameof(IdPeliculaHorario))]
         public PeliculaHorario PeliculaHorario { get; set; }
+
+        [Required]
+        public int IdButaca { get; set; }
+
+        [ForeignKey(nameof(IdButaca))]
+        public Butaca Butaca { get; set; }
     }
 }

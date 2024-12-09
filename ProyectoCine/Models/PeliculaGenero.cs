@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
-namespace ProyectoCine.Data
+namespace ProyectoCine.Models
 {
-    public class PeliculaHorario
+    public class PeliculaGenero
     {
         [Key]
         public int IdPeliculaGenero { get; set; }
@@ -15,9 +15,9 @@ namespace ProyectoCine.Data
         public Pelicula Pelicula { get; set; }
 
         [Required]
-        public int IdHorario { get; set; }
+        public int IdGenero { get; set; }
 
-        [ForeignKey(nameof(IdHorario))]
-        public Horario Horario { get; set; }
+        [ForeignKey(nameof(IdGenero))]
+        public Genero Genero { get; set; }
     }
 }

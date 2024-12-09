@@ -1,0 +1,24 @@
+﻿<div class="container mt-5">
+    <h2>Reservar Película</h2>
+    <form method="post" asp-controller="Reservation" asp-action="SeleccionarButaca">
+        <div class="form-group">
+            <label for="Movie">Seleccionar Película</label>
+            <select id="Movie" name="selectedMovieId" class="form-control">
+                @foreach (var movie in ViewBag.Movies)
+                {
+                    <option value="@movie.IdPelicula">@movie.NamePelicula</option>
+                }
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="Schedule">Seleccionar Horario</label>
+            <select id="Schedule" name="selectedScheduleId" class="form-control">
+                @foreach (var schedule in ViewBag.Schedules)
+                {
+                    <option value="@schedule.IdHorario">@schedule.Fecha.ToShortDateString() - @schedule.Hora</option>
+                }
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Siguiente</button>
+    </form>
+</div>
